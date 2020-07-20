@@ -250,7 +250,7 @@ class table:
 		this.columns = columns
 		this.rows = rows
 	def bind(this):
-		list = this.tbl.grid_slaves()
+		list = this.tbl.grid_subordinates()
 		for l in list:
 			l.destroy()
 		table_indx = -1
