@@ -2,9 +2,9 @@ from mysqldb import *
 from tools import *
 import datetime
 import calendar
-def amont():
+def amont(ID):
     today = datetime.date.today()
-    Dete_f = dbget("SELECT Date FROM fields WHERE field_id = 2")
+    Dete_f = dbget("SELECT Date FROM fields WHERE field_id = "+ID+"")
     # print(Dete_f)
     dd = Dete_f[0][0]
     print(dd)
@@ -12,7 +12,7 @@ def amont():
     between = today-dd
     inputDays = between.days
     print(inputDays)
-    plantT=dbget("SELECT  plant_type FROM fields WHERE field_id = 2")
+    plantT=dbget("SELECT  plant_type FROM fields WHERE field_id = "+ID+"")
     PT = plantT[0][0]
     print(PT)
     #pId = dbget("SELECT  * FROM planttype WHERE pTypeID =2" )#pTypeName"+str(PT)+""

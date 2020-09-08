@@ -1,7 +1,7 @@
 from mysqldb import *
 from tools import *
 import datetime
-import lastdbamount
+from lastdbamount import *
 def create_table():
 	iscreated = dbrun("""CREATE TABLE IF NOT EXISTS fields( 
                             field_id int ,
@@ -9,7 +9,9 @@ def create_table():
                              plant_type varchar(99),
                              water_mm float,
                              Day_of_plant int,
-                             soil int,
+                             Width_F int,
+                             Height_F int,
+                             soil_H int,
                              water_l int,
                              temp int,
                              humidity int,
@@ -23,7 +25,7 @@ ft = 'verdana 16'
 ft1 = 'verdana 11'
 pad = 5
 
-frm = form("900x600")
+frm = form("900x630")
 frm.iconbitmap('image\Farm.ico')
 frm.resizable(width=False, height=False)
 frm.title("WELCOME | Control Window | ADMINISTRATOR")
@@ -33,6 +35,8 @@ fieldno_var   = intvar()
 fieldname_var = strvar()
 plant_var     = strvar()
 water_var     = strvar()
+width_var     = strvar()
+heigh_var     = strvar()
 season_var     = strvar()
 soil_var     = strvar()
 waterl_var     = strvar()
@@ -72,6 +76,8 @@ def clear_field():
 	fieldno_var.set(dbautonum('fields','field_id'))
 	fieldname_var.set("")
 	plant_var.set("potato")
+	width_var.set("vlaue in cm")
+	heigh_var.set("vlaue in cm")
 	water_var.set(" 0.0")
 	season_var.set("0 ")
 	soil_var.set(" 0 ")
@@ -86,7 +92,7 @@ def clear_field():
 	frm.winfo_children()[1].winfo_children()[3].focus()
 def add_field():
 	if check_field():
-		is_added =dbrun("insert into fields (field_id, field_name, plant_type, water_mm, Day_of_plant, Date)  values(%s,'%s','%s',%s,%s,'%s')" %(fieldno_var.get(),fieldname_var.get(),plant_var.get(),water_var.get(),season_var.get(),date_var.get()))
+		is_added =dbrun("insert into fields (field_id, field_name, plant_type,Width_F,Height_F, water_mm, Day_of_plant, Date)  values(%s,'%s','%s',%s,%s,%s,%s,'%s')" %(fieldno_var.get(),fieldname_var.get(),plant_var.get(),width_var.get(),heigh_var.get(),water_var.get(),season_var.get(),date_var.get()))
 		if is_added:
 			msgbox("Field Is Added")
 		clear_field()
@@ -98,7 +104,7 @@ def find_field(Field_id = None):
 	else:
 		fnum =Field_id
 	if fnum =="": fnum=0
-	lastdbamount.amont()
+	amont(fnum)
 	rows = dbget("select * from fields where field_id="+str(fnum))
 	if len(rows)< 1 :msgbox("Field ID Not Found")
 	else:
@@ -106,20 +112,22 @@ def find_field(Field_id = None):
 		fieldno_var.set(row[0])
 		fieldname_var.set(row[1])
 		plant_var.set(row[2])
-		water_var.set(""+str(row[3])+" mm")
-		season_var.set(""+str(row[4])+" days")
-		soil_var.set(""+str(row[5])+" %")
-		waterl_var.set(""+str(row[6])+" %")
-		temp_var.set(""+str(row[7])+" C'")
-		humidity_var.set(""+str(row[8])+" %")
-		dates_var.set(row[9])
-		date_var.set(row[10])
+		width_var.set(""+str(row[3])+" cm")
+		heigh_var.set(""+str(row[4])+ " cm")
+		water_var.set(""+str(row[5])+" mm")
+		season_var.set(""+str(row[6])+" days")
+		soil_var.set(""+str(row[7])+" %")
+		waterl_var.set(""+str(row[8])+" %")
+		temp_var.set(""+str(row[9])+" C'")
+		humidity_var.set(""+str(row[10])+" %")
+		dates_var.set(row[11])
+		date_var.set(row[12])
 		frm.winfo_children()[2].winfo_children()[0].config(state='disable')
 		frm.winfo_children()[2].winfo_children()[2].config(state='enable')
 		frm.winfo_children()[2].winfo_children()[3].config(state='enable')
 
 def update_field():
-	isedet = dbrun("UPDATE fields SET field_name ='"+fieldname_var.get()+"',Date = '"+str(date_var.get())+"'  where field_id ="+str(fieldno_var.get()))
+	isedet = dbrun("UPDATE fields SET field_name ='"+fieldname_var.get()+"',Width_F ='"+width_var.get()+"',Height_F ='"+heigh_var.get()+"' ,Date = '"+str(date_var.get())+"'  where field_id ="+str(fieldno_var.get()))
 	if isedet:
 		msgbox("Field Is Updated")
 		clear_field()
@@ -134,39 +142,45 @@ def delete_field():
 
 
 f1 = frame(frm)
-label(f1 ,"Field_No     :").grid(row=0,column=0,pady=pad,padx=pad)
+label(f1 ,"FieldNo     :").grid(row=0,column=0,pady=pad,padx=pad)
 textbox(f1,fieldno_var,True,True).grid(row=0,column=1,pady=pad)
 
-label(f1 ,"Field_Name :").grid(row=0,column=2,pady=pad,padx=pad)
+label(f1 ,"FieldName :").grid(row=0,column=2,pady=pad,padx=pad)
 textbox(f1,fieldname_var).grid(row=0,column=3,pady=pad)
 
-label(f1,"Plant_Name :").grid(row=1,column=0,pady=pad,padx=pad)
+label(f1,"PlantName :").grid(row=1,column=0,pady=pad,padx=pad)
 textbox(f1,plant_var,None,True).grid(row=1,column=1,pady=pad)
 
-label(f1,"Water_Need :").grid(row=1,column=2,pady=pad,padx=pad)
-textbox(f1,water_var,True,True).grid(row=1,column=3,pady=pad)
+label(f1,"WidthField :").grid(row=1,column=2,pady=pad,padx=pad)
+textbox(f1,width_var,True).grid(row=1,column=3,pady=pad)
+
+label(f1,"HeightField :").grid(row=2,column=0,pady=pad,padx=pad)
+textbox(f1,heigh_var,True).grid(row=2,column=1,pady=pad)
+
+label(f1,"WaterNeed :").grid(row=2,column=2,pady=pad,padx=pad)
+textbox(f1,water_var,True,True).grid(row=2,column=3,pady=pad)
 
 
 
-label(f1,"Day_of_plant :").grid(row=2,column=0,pady=pad,padx=pad)
-textbox(f1,season_var,True,True).grid(row=2,column=1,pady=pad)
+label(f1,"Dayofplant :").grid(row=3,column=0,pady=pad,padx=pad)
+textbox(f1,season_var,True,True).grid(row=3,column=1,pady=pad)
 
-label(f1,"soil humidity :").grid(row=2,column=2,pady=pad,padx=pad)
-textbox(f1,soil_var,True,True).grid(row=2,column=3,pady=pad)
+label(f1,"SoilHumidity :").grid(row=3,column=2,pady=pad,padx=pad)
+textbox(f1,soil_var,True,True).grid(row=3,column=3,pady=pad)
 
-label(f1,"water_l :").grid(row=3,column=0,pady=pad,padx=pad)
-textbox(f1,waterl_var,True,True).grid(row=3,column=1,pady=pad)
+label(f1,"Water_l :").grid(row=4,column=0,pady=pad,padx=pad)
+textbox(f1,waterl_var,True,True).grid(row=4,column=1,pady=pad)
 
-label(f1,"temperature :").grid(row=3,column=2,pady=pad,padx=pad)
-textbox(f1,temp_var,True,True).grid(row=3,column=3,pady=pad)
+label(f1,"Temperature :").grid(row=4,column=2,pady=pad,padx=pad)
+textbox(f1,temp_var,True,True).grid(row=4,column=3,pady=pad)
 
-label(f1,"humidity :").grid(row=4,column=0,pady=pad,padx=pad)
-textbox(f1,humidity_var,True,True).grid(row=4,column=1,pady=pad)
+label(f1,"Humidity :").grid(row=5,column=0,pady=pad,padx=pad)
+textbox(f1,humidity_var,True,True).grid(row=5,column=1,pady=pad)
 
-label(f1,"Datesensor :").grid(row=4,column=2,pady=pad,padx=pad)
-textbox(f1,dates_var,None,True).grid(row=4,column=3,pady=pad)
-label(f1,"Date :").grid(row=5,column=0,pady=pad,columnspan=2,padx=pad)
-textbox(f1,date_var).grid(row=5,column=1,columnspan=2,pady=pad)
+label(f1,"DateSensor :").grid(row=5,column=2,pady=pad,padx=pad)
+textbox(f1,dates_var,None,True).grid(row=5,column=3,pady=pad)
+label(f1,"Date :").grid(row=6,column=0,pady=pad,columnspan=2,padx=pad)
+textbox(f1,date_var).grid(row=6,column=1,columnspan=2,pady=pad)
 f1.pack(pady=pad)
 
 f2 = frame(frm)
@@ -179,7 +193,7 @@ button(f2,"Exite",frm.destroy).grid(row=0,column=5,padx=pad)
 f2.pack(pady=pad)
 
 def show_data():
-	frm_data = toplevel("800x500")
+	frm_data = toplevel("830x400")
 	frm_data.iconbitmap('image\Farm.ico')
 	frm_data.resizable(width=False, height=False)
 	frm_data.title("WELCOME | Show Window | ADMINISTRATOR")
@@ -193,13 +207,13 @@ def show_data():
 	btn_searche.grid(row=0 ,column=1)
 	f_searche.pack()
 
-	cols = ["Field_ID","Fiel_Name","plant_type","Water_Need","Season","Soil","Water_l","Temp","Humidity","Date_s","Date_f"]
+	cols = ["FieldID","FielName","planttype","WidF","HeighF","WaterNeed","Days","Soil","Waterl","Temp","Humidity","DateS","DateF"]
 	rows = dbget("select * from fields")
 	tbl = table(frm_data,cols,rows)
 
 	def fun_searche():
 		s = txt_searche.get()
-		cols_serche = ["Field_ID","Fiel_Name","plant_type","Water_Need","Season","Soil","Water_l","Temp","Date_s","Date_f"]
+		cols_serche = ["FieldID","FielName","planttype","WidF","HeighF","WaterNeed","Days","Soil","Waterl","Temp","Humidity","DateS","DateF"]
 		rows_searche = dbget("select * from fields where Field_name like '%"+s+"%' or plant_type like'%"+s+"%'")
 		tbl.change_data(cols_serche,rows_searche )
 		tbl.bind()
