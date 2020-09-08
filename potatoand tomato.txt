@@ -1,0 +1,15 @@
+conda create -n tensorflow1 pip python=3.5
+
+activate tensorflow1
+
+pip install -r requirements.txt
+
+python -m pip install --upgrade pip
+
+python load_weights.py --weights ./weights/yolov3_custom_final.weights --output ./weights/yolov3_custom_final.tf --num_classes 2
+
+python detect_video.py --video 0 --weights weights/yolov3_custom_final.tf --num_classes 2 --classes data/labels/obj.names
+
+cd C:\Users\abdulmomen\Desktop\cnds\opencv\2742020\last\Object-Detection-API-master
+
+conda install -c anaconda mysql-connector-python
