@@ -1,13 +1,14 @@
 from mysqldb import *
 from tools import *
-
+import datetime
+import lastdbamount
 def create_table():
 	iscreated = dbrun("""CREATE TABLE IF NOT EXISTS fields( 
                             field_id int ,
                              field_name varchar(99) ,
                              plant_type varchar(99),
-                             water_mm int,
-                             season int,
+                             water_mm float,
+                             Day_of_plant int,
                              soil int,
                              water_l int,
                              temp int,
@@ -31,12 +32,12 @@ button(frm,"Create Table", create_table).pack(pady=pad)
 fieldno_var   = intvar()
 fieldname_var = strvar()
 plant_var     = strvar()
-water_var     = intvar()
-season_var     = intvar()
-soil_var     = intvar()
-waterl_var     = intvar()
-temp_var     = intvar()
-humidity_var = intvar()
+water_var     = strvar()
+season_var     = strvar()
+soil_var     = strvar()
+waterl_var     = strvar()
+temp_var     = strvar()
+humidity_var = strvar()
 dates_var       = strvar()
 date_var       = strvar()
 def check_field():
@@ -70,32 +71,34 @@ def check_field():
 def clear_field():
 	fieldno_var.set(dbautonum('fields','field_id'))
 	fieldname_var.set("")
-	plant_var.set("")
-	water_var.set(0)
-	season_var.set(0)
-	soil_var.set(0)
-	waterl_var.set(0)
-	temp_var.set(0)
-	humidity_var.set(0)
+	plant_var.set("potato")
+	water_var.set(" 0.0")
+	season_var.set("0 ")
+	soil_var.set(" 0 ")
+	waterl_var.set("0 ")
+	temp_var.set(" 0 ")
+	humidity_var.set("0")
 	dates_var.set(0)
-	date_var.set('2020-02-22')
+	date_var.set(datetime.datetime.today().date())
 	frm.winfo_children()[2].winfo_children()[0].config(state='enable')
 	frm.winfo_children()[2].winfo_children()[2].config(state='disable')
 	frm.winfo_children()[2].winfo_children()[3].config(state='disable')
 	frm.winfo_children()[1].winfo_children()[3].focus()
 def add_field():
 	if check_field():
-		is_added =dbrun("insert into fields (field_id, field_name, plant_type, water_mm, season, Date)  values(%d,'%s','%s',%d,%d,'%s')" %(fieldno_var.get(),fieldname_var.get(),plant_var.get(),water_var.get(),season_var.get(),date_var.get()))
+		is_added =dbrun("insert into fields (field_id, field_name, plant_type, water_mm, Day_of_plant, Date)  values(%s,'%s','%s',%s,%s,'%s')" %(fieldno_var.get(),fieldname_var.get(),plant_var.get(),water_var.get(),season_var.get(),date_var.get()))
 		if is_added:
 			msgbox("Field Is Added")
 		clear_field()
 
 def find_field(Field_id = None):
+
 	if Field_id == None:
 		fnum = inbox("Enter Field Number",True)
 	else:
 		fnum =Field_id
 	if fnum =="": fnum=0
+	lastdbamount.amont()
 	rows = dbget("select * from fields where field_id="+str(fnum))
 	if len(rows)< 1 :msgbox("Field ID Not Found")
 	else:
@@ -103,12 +106,12 @@ def find_field(Field_id = None):
 		fieldno_var.set(row[0])
 		fieldname_var.set(row[1])
 		plant_var.set(row[2])
-		water_var.set(row[3])
-		season_var.set(row[4])
-		soil_var.set(row[5])
-		waterl_var.set(row[6])
-		temp_var.set(row[7])
-		humidity_var.set(row[8])
+		water_var.set(""+str(row[3])+" mm")
+		season_var.set(""+str(row[4])+" days")
+		soil_var.set(""+str(row[5])+" %")
+		waterl_var.set(""+str(row[6])+" %")
+		temp_var.set(""+str(row[7])+" C'")
+		humidity_var.set(""+str(row[8])+" %")
 		dates_var.set(row[9])
 		date_var.set(row[10])
 		frm.winfo_children()[2].winfo_children()[0].config(state='disable')
@@ -116,7 +119,7 @@ def find_field(Field_id = None):
 		frm.winfo_children()[2].winfo_children()[3].config(state='enable')
 
 def update_field():
-	isedet = dbrun("UPDATE fields SET field_name ='"+fieldname_var.get()+"',plant_type = '"+plant_var.get()+"',water_mm = "+str(water_var.get())+" ,season ="+str(season_var.get())+" ,Date ='"+str(date_var.get())+"' where field_id ="+str(fieldno_var.get()))
+	isedet = dbrun("UPDATE fields SET field_name ='"+fieldname_var.get()+"',Date = '"+str(date_var.get())+"'  where field_id ="+str(fieldno_var.get()))
 	if isedet:
 		msgbox("Field Is Updated")
 		clear_field()
@@ -138,17 +141,17 @@ label(f1 ,"Field_Name :").grid(row=0,column=2,pady=pad,padx=pad)
 textbox(f1,fieldname_var).grid(row=0,column=3,pady=pad)
 
 label(f1,"Plant_Name :").grid(row=1,column=0,pady=pad,padx=pad)
-textbox(f1,plant_var).grid(row=1,column=1,pady=pad)
+textbox(f1,plant_var,None,True).grid(row=1,column=1,pady=pad)
 
 label(f1,"Water_Need :").grid(row=1,column=2,pady=pad,padx=pad)
-textbox(f1,water_var,True).grid(row=1,column=3,pady=pad)
+textbox(f1,water_var,True,True).grid(row=1,column=3,pady=pad)
 
 
 
-label(f1,"Season :").grid(row=2,column=0,pady=pad,padx=pad)
-textbox(f1,season_var,True).grid(row=2,column=1,pady=pad)
+label(f1,"Day_of_plant :").grid(row=2,column=0,pady=pad,padx=pad)
+textbox(f1,season_var,True,True).grid(row=2,column=1,pady=pad)
 
-label(f1,"soil :").grid(row=2,column=2,pady=pad,padx=pad)
+label(f1,"soil humidity :").grid(row=2,column=2,pady=pad,padx=pad)
 textbox(f1,soil_var,True,True).grid(row=2,column=3,pady=pad)
 
 label(f1,"water_l :").grid(row=3,column=0,pady=pad,padx=pad)
