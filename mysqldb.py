@@ -1,5 +1,5 @@
 import mysql.connector
-
+from tools import *
 global all_err
 global myuser
 global mypass
@@ -32,7 +32,7 @@ try:
 	)
 
 except mysql.connector.Error as e:
-	all_err+= str(e) + " , "
+	all_err+= str(e) + " .Plase check Mysql server and user. ,"
 
 def dbrun(sql):
 	try:
@@ -69,8 +69,10 @@ def dbautonum(table, column):
 			if row[0] ==None: return "1"
 			else:return row[0]
 		else:
-			return ""
+			mserror("no connection to database plase turn on zamp")
+			return 0
+
 	except mysql.connector.Error as e:
-		return ""
+			return ""
 
 

@@ -20,7 +20,7 @@ def boolvar():
 	return BooleanVar()
 
 
-def form(geometry='350x200',title=None, is_center=True ):
+def form(geometry='150x100',title=None, is_center=True ):
 	f = Tk()
 	f.geometry(geometry)
 	f.title(title)
@@ -186,6 +186,9 @@ def fontall(form,font):
 
 def msgbox(text):
 	messagebox.showinfo('', text)
+
+def mserror(text):
+	messagebox.showerror("",text)
 
 def msgask(text):
 	return messagebox.askyesno('', text)

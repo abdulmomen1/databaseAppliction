@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 08, 2020 at 02:59 PM
+-- Generation Time: Sep 08, 2020 at 11:28 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.7
 
@@ -31,6 +31,8 @@ CREATE TABLE `fields` (
   `field_id` int(11) DEFAULT NULL,
   `field_name` varchar(99) DEFAULT NULL,
   `plant_type` varchar(99) DEFAULT NULL,
+  `Width_F` int(11) NOT NULL,
+  `Height_F` int(11) NOT NULL,
   `water_mm` float DEFAULT NULL,
   `Day_of_plant` int(11) DEFAULT NULL,
   `soil` int(11) DEFAULT NULL,
@@ -45,9 +47,10 @@ CREATE TABLE `fields` (
 -- Dumping data for table `fields`
 --
 
-INSERT INTO `fields` (`field_id`, `field_name`, `plant_type`, `water_mm`, `Day_of_plant`, `soil`, `water_l`, `temp`, `humidity`, `Date_s`, `Date`) VALUES
-(1, 'potatoField', 'potato', 0.45, 0, 50, 50, 30, 32, NULL, '2020-09-07'),
-(2, 'potatoField', 'tomato', 0.45, 0, NULL, NULL, NULL, NULL, NULL, '2020-09-08');
+INSERT INTO `fields` (`field_id`, `field_name`, `plant_type`, `Width_F`, `Height_F`, `water_mm`, `Day_of_plant`, `soil`, `water_l`, `temp`, `humidity`, `Date_s`, `Date`) VALUES
+(1, 'potatoField', 'potato', 54, 70, 0.75, 32, 50, 50, 30, 32, NULL, '2020-08-07'),
+(2, 'potatoField', 'tomato', 54, 70, 0.45, 0, NULL, NULL, NULL, NULL, NULL, '2020-09-08'),
+(3, 'dd', 'potato', 23, 22, 0, 0, NULL, NULL, NULL, NULL, NULL, '2020-09-08');
 
 -- --------------------------------------------------------
 
