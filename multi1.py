@@ -114,7 +114,7 @@ def water_soil_fun():
                     print("no data in serial port")
                     conn+=1
                     sleep(0.5)
-                water_l  = dbget("SELECT water_l FROM fields WHERE field_id = 1")
+                water_l  = dbget("SELECT water_l FROM fields WHERE field_id = '"+str(field_Id)+"'")
                 waterl   = water_l[0][0]
                 if waterl < 80 :
                     motor_state = firebase.get('1', 'motor_state')
@@ -246,7 +246,7 @@ def pump_fun():
                         watered = True
                         break
                     elif(str(moisture[0][0]) < str(thresh)) :
-                        timeToSleep = getTime("1")
+                        timeToSleep = getTime(field_Id)
                         GPIO.output(18, 1)
                         sleep(timeToSleep)
                         GPIO.output(18, 0)
@@ -254,13 +254,13 @@ def pump_fun():
             
     print("motor_state  ="+motor_state)
     if (motor_state == '"ON"'):# turn on motor
-        water_l  = dbget("SELECT water_l FROM fields WHERE field_id = 1")
+        water_l  = dbget("SELECT water_l FROM fields WHERE field_id = '"+str(field_Id)+"'")
         waterl   = water_l[0][0]
         if waterl < 80:
             con= 0
             water_soil_fun()
         else:   
-            timeToSleep = getTime("1")
+            timeToSleep = getTime(field_Id)
             GPIO.output(18, 1)
             sleep(timeToSleep)
             firebase.put('1','motor_state',"AUTO")
@@ -291,7 +291,6 @@ def update_fun():
 
 
 def main():
-    #print(" hdjaKLAJxojm  = "+str(field_Id)+"")
     global alarm_state
     global motor_state
     global con

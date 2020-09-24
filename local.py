@@ -107,9 +107,9 @@ def dht11_funl():
     result = instance.read()
     if result.is_valid():
         #firebase.put('1','Temperature',result.temperature)
-        dbrun("UPDATE fields SET temp ="+str(result.temperature)+" where field_id = 1")
+        dbrun("UPDATE fields SET temp ="+str(result.temperature)+" where field_id = '"+str(field_Id)+"'")
         #firebase.put('1','Humidity',result.humidity)
-        dbrun("UPDATE fields SET humidity ="+str(result.humidity)+" where field_id = 1")
+        dbrun("UPDATE fields SET humidity ="+str(result.humidity)+" where field_id = '"+str(field_Id)+"'")
             
         print("Temp: %d C" % result.temperature +'\n'+"Humid: %d %%" % result.humidity)
 
@@ -127,7 +127,7 @@ def pump_funl():
     print("current time", time)
     if not watered:
         while True:
-            moisture = dbget("SELECT soil FROM fields WHERE field_id = 1")
+            moisture = dbget("SELECT soil FROM fields WHERE field_id = '"+str(field_Id)+"'")
             sleep(1)
             print("soile00   =", str(moisture[0][0]))
             if (((time > "22:45") and (time < "00:55")) or ((time > "00:00") and (time < "01:45"))):
@@ -144,18 +144,3 @@ def pump_funl():
                     break
             else:
                break
-def mainfun():
-    while True:
-        water_soil_funl()
-        
-        
-        pump_funl()
-       
-        dht11_funl()
-        
-        alarm_funl()
-        
-        
-
-#if __name__ == '__main__':main()
-            
